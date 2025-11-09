@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-xgs}
+      POSTGRES_USER: ${POSTGRES_USER:-xgs}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-xgs}
+    ports:
+      - "5438:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-xgs} -d ${POSTGRES_DB:-xgs}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  chrome:
+    image: selenium/standalone-chromium:125.0
+    shm_size: 2g
+    ports:
+      - "4444:4444"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/status"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  scraper:
+    build: ./scraper
+    env_file:
+      - .env
+    environment:
+      SCRAPE_INTERVAL_SECONDS: ${SCRAPE_INTERVAL_SECONDS:-86400}
+      RUN_AT_STARTUP: ${RUN_AT_STARTUP:-true}
+    depends_on:
+      db:
+        condition: service_healthy
+      chrome:
+        condition: service_healthy
+    command: ["python", "main.py", "--daemon"]
+    restart: unless-stopped
+
+volumes:
+  db_data:

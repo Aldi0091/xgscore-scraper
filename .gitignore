@@ -1,0 +1,52 @@
+# ✅ Python cache & compiled files
+__pycache__/
+*.py[cod]
+*.so
+
+# ✅ Virtual environments
+venv/
+env/
+.venv/
+
+# ✅ Logs
+*.log
+logs/
+debug.log
+
+# ✅ Scraping outputs (CSV, JSON, Excel, HTML dumps)
+*.csv
+*.json
+*.xlsx
+*.xls
+*.html
+data/
+output/
+exports/
+
+# ✅ Temp files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# ✅ Config / Secrets
+*.env
+.env
+config.json
+settings_local.py
+
+# ✅ Jupyter notebooks checkpoints (если используешь)
+.ipynb_checkpoints/
+
+# ✅ IDE / Editor
+.idea/
+.vscode/
+*.code-workspace
+
+# ✅ System / OS files
+.DS_Store
+Thumbs.db
+
+# ✅ Docker (если используешь)
+*.pid
+*.pid.lock
