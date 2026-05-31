@@ -11,7 +11,7 @@ FROM base AS deps
 WORKDIR /app
 COPY package.json pnpm-lock.yaml* ./
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
-    pnpm install --frozen-lockfile
+    pnpm install --no-frozen-lockfile
 
 # ── builder: compile Next.js ─────────────────────────────────────────────────
 FROM base AS builder
