@@ -8,5 +8,5 @@ export interface XgsFixture {
   away_xg: number | null   // DOUBLE PRECISION
   odd: string | null
   link: string | null
-  scraped_at: Date          // TIMESTAMPTZ → JS Date via postgres driver
+  scraped_at: string        // ISO string — serializable to Client Components
 }
