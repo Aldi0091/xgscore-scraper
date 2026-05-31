@@ -18,6 +18,9 @@ export interface FixturesResult {
   tournaments: string[]
 }
 
+// postgres.js returns TIMESTAMPTZ as JS Date — not serializable to Client Components
+type RawFixture = Omit<XgsFixture, 'scraped_at'> & { scraped_at: Date }
+
 export async function getFixtures({
   page = 1,
   search = '',
@@ -26,7 +29,6 @@ export async function getFixtures({
   const offset = (page - 1) * PAGE_SIZE
   const like = `%${search}%`
 
-  // Build optional filter fragments — empty sql`` is a no-op in postgres.js
   const searchFilter = search
     ? sql`AND (home_team ILIKE ${like} OR away_team ILIKE ${like} OR tournament ILIKE ${like})`
     : sql``
@@ -35,8 +37,8 @@ export async function getFixtures({
     ? sql`AND tournament = ${tournament}`
     : sql``
 
-  const [rows, [{ count }], tourRows] = await Promise.all([
-    sql<XgsFixture[]>`
+  const [rawRows, [{ count }], tourRows] = await Promise.all([
+    sql<RawFixture[]>`
       SELECT *
       FROM xgs_fixtures
       WHERE TRUE ${searchFilter} ${tournamentFilter}
@@ -55,6 +57,11 @@ export async function getFixtures({
       ORDER BY tournament
     `,
   ])
+
+  const rows: XgsFixture[] = rawRows.map(r => ({
+    ...r,
+    scraped_at: r.scraped_at instanceof Date ? r.scraped_at.toISOString() : String(r.scraped_at),
+  }))
 
   return {
     rows,
