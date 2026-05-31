@@ -45,5 +45,25 @@ services:
     command: ["python", "main.py", "--daemon"]
     restart: unless-stopped
 
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "3076:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-xgs}:${POSTGRES_PASSWORD:-xgs}@db:5432/${POSTGRES_DB:-xgs}
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
 volumes:
   db_data:
