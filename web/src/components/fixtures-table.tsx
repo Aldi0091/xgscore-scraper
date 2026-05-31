@@ -46,14 +46,6 @@ function formatDate(iso: string) {
 }
 
 const columns = [
-  col.accessor('tournament', {
-    header: 'Tournament',
-    cell: info => (
-      <span className="inline-flex items-center rounded-full border border-border px-2 py-0.5 text-xs font-medium text-muted-foreground whitespace-nowrap">
-        {info.getValue() || '—'}
-      </span>
-    ),
-  }),
   col.accessor('kickoff', {
     header: 'Time',
     cell: info => (
